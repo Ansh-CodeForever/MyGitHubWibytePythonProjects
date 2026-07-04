@@ -20,10 +20,13 @@ models = dict.fromkeys(master_dict['Brands'])
 models['WDell'] = ['Inspire', 'Altitude', 'Adam']
 models['WLenovo'] = ['Think', 'Idea', 'Yoga']
 models['WMac'] = ['MacBook Retnia', 'MacBook Air', 'MacBook Pro']
-models['Wacer'] = ['Lite', 'Aspire', 'Nitro']
+models['WAcer'] = ['Lite', 'Aspire', 'Nitro']
 models['WAcus'] = ['Vivo', 'TUF', 'Zen']
 models['WHP'] = ['Mini', 'Maxima', 'Pro']
 models['Apple'] = ['MacBook Air', 'MacBook Pro', 'MackBook Neo']
+
+base_price = {'WDell': 600, 'WLenovo': 800, 'WMac': 750, 'WAcer': 600, 'WAcus': 550, 'WHP': 700, 'Apple': 850}
+feature_price = {'Speed': 50, 'RAM': 95, 'Storage': 25, 'Screensize': 120}
 
 
 laptop_list = []
@@ -34,17 +37,58 @@ for n_laptops in range(50):
     for kk in new_laptop:
         if kk != 'Model':
             new_laptop[kk] = random.choice(master_dict[kk+'s'])
-        new_laptop['Model'] = random.choice(models[new_laptop['Brand']])
+    new_laptop['Model'] = random.choice(models[new_laptop['Brand']])
+    new_laptop['Price'] = base_price[new_laptop['Brand']]
+    incr_price = 0
+    for feature in feature_price:
+        incr_price += master_dict[feature+'s'].index(new_laptop[feature])*feature_price[feature]
+
+    new_price = new_laptop['Price'] + incr_price
+    new_laptop['Price'] = 'EUR ' + str(new_price)
     laptop_list.append(new_laptop)
 
 user_choice = dict.fromkeys(specs)
+
+pref = input('Please indicate the specifications where you have a prefernce for. \nYou can specify these things: Brand, Model, CPU, Speed, RAM, Storage, Screensize, Price. (comma seperate)\n')
+pref_list = pref.split(',')
+pref_list = list(map(str.strip, pref_list))
+
+units = {'Speed': 'GHz', 'RAM': 'GB', 'Storage': 'GB', 'Screensize': 'in', 'Price': 'EUR'}
 for kk in specs:
-    user_choice[kk] = input('Any prefernce for ' + kk + '(Enter \'enter\' for no prefernce)\n')
+    if kk in pref_list:
+        if kk != 'Model':
+            pref_str = '/'.join(master_dict[kk+'s'])
+        else:
+            pref_str = '/'.join(models[user_choice['Brand']])
+        user_response = input('Your prefernce for ' + kk + ': ' + pref_str + ' (No prefernce: \'enter\', Multiple: Comma seperated, Range: R\n')
+        if user_response == 'R':
+            min = input('Minimum ' + units[kk] + ': ')
+            max = input('Maximum ' + units[kk] + ': ')
+            user_choice[kk] = str(min) + '-' + str(max)
+        else:
+            user_choice[kk] = user_response
+    else:
+        user_choice[kk] = ''
 
 querry = ''
 for kk in user_choice:
     if user_choice[kk].lower() == '':
         pass
+    elif ',' in user_choice[kk]:
+        m_choices = user_choice[kk].split(',')
+        mc_list = list(map(str.strip, m_choices))
+        for c in mc_list:
+            if c == mc_list[0]:
+                querry = querry + '(' + 'laptop[' + '\'' + kk + '\'] == ' + '\'' + c + '\'' + ' or '
+            elif c != mc_list[-1]:
+                querry = querry + 'laptop[' + '\'' + kk + '\'] == ' + '\'' + c + '\'' + ' or '
+            else:
+                querry = querry + 'laptop[' + '\'' + kk + '\'] == ' + '\'' + c + '\'' + ')' + ' and ' 
+    elif '-' in user_choice[kk]:
+        range_min = user_choice[kk].split('-')[0]
+        range_max = user_choice[kk].split('-')[1]    
+        querry = querry + '(' + 'float(laptop[' + '\'' + kk + '\'' + '].split()[0]) >= ' + range_min
+        querry = querry + ' and float(laptop[' + '\'' + kk + '\'].split()[0]) <=' + range_max + ')' + ' and '
     else:
         querry = querry + 'laptop[' + '\'' + kk + '\'' + '] == ' + '\'' + user_choice[kk] + '\'' + ' and '
 querry = querry[0:-4:1]
@@ -65,12 +109,12 @@ characters = 0
 for kk in specs:
     print(kk, end = '')
     characters = len(kk)
-    print((12-characters)*' ', end = '')
+    print((13-characters)*' ', end = '')
 print()
 
 for laptop in selected_laptops:
     for kk in laptop:
         print(laptop[kk], end = '')
         characters = len(laptop[kk])
-        print((12-characters)*' ', end = '')
+        print((13-characters)*' ', end = '')
     print()
