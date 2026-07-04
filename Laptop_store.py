@@ -1,4 +1,6 @@
 import random
+import colorama
+from colorama import Fore, Back, Style
 
 print('Welcome to my laptop store, called digipro! We have lot\'s of computers, choose your prefence!')
 print()
@@ -60,7 +62,7 @@ for kk in specs:
             pref_str = '/'.join(master_dict[kk+'s'])
         else:
             pref_str = '/'.join(models[user_choice['Brand']])
-        user_response = input('Your prefernce for ' + kk + ': ' + pref_str + ' (No prefernce: \'enter\', Multiple: Comma seperated, Range: R\n')
+        user_response = input('Your prefernce for ' + kk + ': ' + pref_str + ' (No prefernce: \'\', Multiple: Comma seperated, Range: R\n')
         if user_response == 'R':
             min = input('Minimum ' + units[kk] + ': ')
             max = input('Maximum ' + units[kk] + ': ')
@@ -86,9 +88,13 @@ for kk in user_choice:
                 querry = querry + 'laptop[' + '\'' + kk + '\'] == ' + '\'' + c + '\'' + ')' + ' and ' 
     elif '-' in user_choice[kk]:
         range_min = user_choice[kk].split('-')[0]
-        range_max = user_choice[kk].split('-')[1]    
-        querry = querry + '(' + 'float(laptop[' + '\'' + kk + '\'' + '].split()[0]) >= ' + range_min
-        querry = querry + ' and float(laptop[' + '\'' + kk + '\'].split()[0]) <=' + range_max + ')' + ' and '
+        range_max = user_choice[kk].split('-')[1]  
+        if kk != 'Price':  
+            querry = querry + '(' + 'float(laptop[' + '\'' + kk + '\'' + '].split()[0]) >= ' + range_min
+            querry = querry + ' and float(laptop[' + '\'' + kk + '\'].split()[0]) <=' + range_max + ')' + ' and '
+        else:
+            querry = querry + '(' + 'float(laptop[' + '\'' + kk + '\'' + '].split()[0]) >= ' + range_min
+            querry = querry + ' and float(laptop[' + '\'' + kk + '\'].split()[1]) <=' + range_max + ')' + ' and ' 
     else:
         querry = querry + 'laptop[' + '\'' + kk + '\'' + '] == ' + '\'' + user_choice[kk] + '\'' + ' and '
 querry = querry[0:-4:1]
@@ -105,6 +111,16 @@ else:
 
 print()
 print(len(selected_laptops), ' laptops have met your prefernces')
+
+sorting_key = input('Results to be sorted by: (none for no sorting): ')
+sorting_rev = input('Enter D for desceding order, A for ascending order.')
+
+if sorting_key == 'Brand':
+    selected_laptops = sorted(selected_laptops, key = lambda x: x[sorting_key], reverse = (sorting_rev == 'D')) 
+elif sorting_key == 'Price':
+    selected_laptops = sorted(selected_laptops, key = lambda x: float(x[sorting_key].split()[1]), reverse = (sorting_rev == 'D')) 
+elif sorting_key != 'none':
+    elected_laptops = sorted(selected_laptops, key = lambda x: float(x[sorting_key].split()[0]), reverse = (sorting_rev == 'D'))
 characters = 0
 for kk in specs:
     print(kk, end = '')
@@ -112,9 +128,12 @@ for kk in specs:
     print((13-characters)*' ', end = '')
 print()
 
+characters = 0
+colours = {'WDell': 'green', 'WLenovo': 'blue', 'WMac': 'yellow', 'WAcer': 'red', 'WAcus': 'magenta', 'WHP': 'cyan', 'Apple': 'white'}
+
 for laptop in selected_laptops:
     for kk in laptop:
-        print(laptop[kk], end = '')
+        print(getattr(Fore, colours[laptop['Brand']].upper()) + laptop[kk], end = '')
         characters = len(laptop[kk])
         print((13-characters)*' ', end = '')
     print()
