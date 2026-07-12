@@ -1,6 +1,7 @@
 import random
 import colorama
 from colorama import Fore, Back, Style
+import os
 
 print('Welcome to my laptop store, called digipro! We have lot\'s of computers, choose your prefence!')
 print()
@@ -61,7 +62,11 @@ for kk in specs:
         if kk != 'Model':
             pref_str = '/'.join(master_dict[kk+'s'])
         else:
-            pref_str = '/'.join(models[user_choice['Brand']])
+            try:
+                pref_str = '/'.join(models[user_choice['Brand']])
+            except KeyError:
+                print('2 Brands chosen, can not specify model') 
+                os._exit(0)
         user_response = input('Your prefernce for ' + kk + ': ' + pref_str + ' (No prefernce: \'\', Multiple: Comma seperated, Range: R\n')
         if user_response == 'R':
             min = input('Minimum ' + units[kk] + ': ')
