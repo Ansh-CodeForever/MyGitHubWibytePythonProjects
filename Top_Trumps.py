@@ -200,10 +200,13 @@ while not game_over:
     print()
     print('Your card is...')
     display_card(player_cards[0])
+    print()
+    print('This card is...')
     if chance == 'player':
         print()
         try:
             chosen_key = input('What category is your choice?\n')
+            chance = 'computer'
             key_requested = mapping_dict[chosen_key]
         except KeyError:
             print('Invalid key chosen, plaease enter a valid key')
@@ -220,8 +223,8 @@ while not game_over:
     print()
     print('Key of interest is...', key_requested)
     print()
-    print('Player ', key_requested, 'is', value_player, ' (Rank:', category_rank(player, key_requested), ')')
-    print('Computer ', key_requested, 'is', value_comput, ' (Rank:', category_rank(comput, key_requested), ')')
+    print('Player ', key_requested, 'is rank:', category_rank(player, key_requested))
+    print('Computer ', key_requested, 'is rank:', category_rank(comput, key_requested))
 
     if Top_Trumps == 'S':
         if chosen_key in ['H', 'F', 'B']:
@@ -237,6 +240,8 @@ while not game_over:
     print()
     print('Computer card is...')
     display_card(comput)
+    print()
+    print('Computer card is...')
 
     if winner == 'player':
         player_cards.extend(table_cards)
