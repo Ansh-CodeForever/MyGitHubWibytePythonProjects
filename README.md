@@ -54,7 +54,7 @@ Use the function guess_number put 2 numbers and then the computer will choose a 
 
 step 1 (e.g.)
 ```python
-guess_number(1, 100)
+gn = guess_number(1, 100)
 ```
 I want the computer to choose a number between 1 and 100
 
@@ -69,7 +69,7 @@ Every 4 attempts you will see a comment
 Once you have done these steps correctly to validate your inputs do this step (e.g.):
 
 ```python
-validate(sc = sc, ns = ns, tw = tw, gs = gs)
+validate(sc = sc, ns = ns, tw = tw, gn = gn)
 ```
 If your validation goes correctly your inputs will be sent for the deep validation
 
